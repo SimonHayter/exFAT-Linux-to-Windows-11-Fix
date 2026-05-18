@@ -57,18 +57,6 @@ Unblock-File .\exFAT-fix.ps1
 .\exFAT-fix.ps1
 ```
 
-### Reading the Partition Colours
-
-When the script lists partitions on your selected disk, each row is colour-coded to help you identify the right one:
-
-| Colour | Meaning |
-|--------|---------|
-| 🟢 Green | exFAT filesystem, no drive letter assigned — prime candidate to fix |
-| 🟡 Yellow | exFAT filesystem, but already has a drive letter — Windows can see it, may not need fixing |
-| 🔴 Red | Not exFAT (NTFS, FAT32, system partitions, etc.) — leave alone |
-
-> **Note:** If Windows cannot read the partition at all due to the ID mismatch, it may show the filesystem as `Unknown` with no drive letter. These are also highlighted green as they are likely the broken exFAT partition.
-
 ### Quick Command Alternative
 
 If you already know your disk and partition numbers — for example, you only have one fixed internal drive and any new drive will always land on the same disk number — you can skip the script entirely and paste the following directly into PowerShell:

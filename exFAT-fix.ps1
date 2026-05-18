@@ -4,33 +4,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 Write-Host "`nAvailable Disks:" -ForegroundColor Cyan
-Write-Host ("{0,-8} {1,-30} {2,-18} {3,-12} {4}" -f "Number", "FriendlyName", "OperationalStatus", "Size (GB)", "BusType")
-Write-Host ("{0,-8} {1,-30} {2,-18} {3,-12} {4}" -f "------", "------------", "-----------------", "---------", "-------")
-
-foreach ($disk in Get-Disk) {
-    $size    = [math]::Round($disk.Size / 1GB, 2)
-    $busType = $disk.BusType
-
-    $hasCandidate = $false
-    foreach ($part in (Get-Partition -DiskNumber $disk.Number -ErrorAction SilentlyContinue)) {
-        $volume = Get-Volume -Partition $part -ErrorAction SilentlyContinue
-        $fs     = if ($volume) { $volume.FileSystemType } else { "Unknown" }
-        $hasLetter = $part.DriveLetter -as [bool]
-        if (($fs -eq "exFAT" -and -not $hasLetter) -or ($fs -eq "Unknown" -and -not $hasLetter)) {
-            $hasCandidate = $true
-            break
-        }
-    }
-
-    $color = if ($hasCandidate) { "Green" } else { "Red" }
-
-    Write-Host ("{0,-8} {1,-30} {2,-18} {3,-12} {4}" -f $disk.Number, $disk.FriendlyName, $disk.OperationalStatus, $size, $busType) -ForegroundColor $color
-}
-
-Write-Host ""
-Write-Host "  Green = Contains a partition that likely needs fixing" -ForegroundColor Green
-Write-Host "  Red   = No candidate partitions found - likely leave alone" -ForegroundColor Red
-Write-Host ""
+Get-Disk | Select-Object Number, FriendlyName, OperationalStatus, @{Name="Size (GB)"; Expression={[math]::Round($_.Size / 1GB, 2)}} | Format-Table -AutoSize
 
 $diskNum = Read-Host "Enter the disk number you wish to fix"
 
@@ -40,36 +14,10 @@ if ($diskNum -notmatch '^\d+$' -or -not (Get-Disk -Number $diskNum -ErrorAction 
 }
 
 Write-Host "`nPartitions on Disk ${diskNum}:" -ForegroundColor Cyan
-Write-Host ("{0,-6} {1,-20} {2,-10} {3,-12} {4}" -f "No.", "Type", "Size (GB)", "FileSystem", "DriveLetter")
-Write-Host ("{0,-6} {1,-20} {2,-10} {3,-12} {4}" -f "---", "----", "---------", "----------", "-----------")
-
-foreach ($part in Get-Partition -DiskNumber $diskNum) {
-    $volume = Get-Volume -Partition $part -ErrorAction SilentlyContinue
-    $fs     = if ($volume) { $volume.FileSystemType } else { "Unknown" }
-    $letter = if ($part.DriveLetter) { "$($part.DriveLetter):" } else { "None" }
-    $size   = [math]::Round($part.Size / 1GB, 2)
-
-    $isExFAT   = $fs -eq "exFAT"
-    $hasLetter = $part.DriveLetter -as [bool]
-
-    $color = if ($isExFAT -and -not $hasLetter) {
-        "Green"   # exFAT, no letter - likely the broken partition
-    } elseif ($isExFAT -and $hasLetter) {
-        "Yellow"  # exFAT but Windows already sees it
-    } elseif (-not $hasLetter -and $fs -eq "Unknown") {
-        "Green"   # no letter, unreadable - could be broken exFAT
-    } else {
-        "Red"     # NTFS, FAT32, system partitions, etc.
-    }
-
-    Write-Host ("{0,-6} {1,-20} {2,-10} {3,-12} {4}" -f $part.PartitionNumber, $part.Type, $size, $fs, $letter) -ForegroundColor $color
-}
-
-Write-Host ""
-Write-Host "  Green  = exFAT, no drive letter - likely needs fixing" -ForegroundColor Green
-Write-Host "  Yellow = exFAT, drive letter assigned - Windows can already see it" -ForegroundColor Yellow
-Write-Host "  Red    = Not exFAT - leave alone" -ForegroundColor Red
-Write-Host ""
+Get-Partition -DiskNumber $diskNum | Select-Object PartitionNumber, Type,
+    @{Name="Size (GB)"; Expression={[math]::Round($_.Size / 1GB, 2)}},
+    @{Name="FileSystem"; Expression={(Get-Volume -Partition $_ -ErrorAction SilentlyContinue)?.FileSystemType}},
+    DriveLetter | Format-Table -AutoSize
 
 $partNum = Read-Host "Enter the partition number you wish to fix"
 
