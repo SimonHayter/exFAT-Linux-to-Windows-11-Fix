@@ -4,7 +4,26 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 Write-Host "`nAvailable Disks:" -ForegroundColor Cyan
-Get-Disk | Select-Object Number, FriendlyName, OperationalStatus, @{Name="Size (GB)"; Expression={[math]::Round($_.Size / 1GB, 2)}} | Format-Table -AutoSize
+Write-Host ("{0,-8} {1,-30} {2,-18} {3,-12} {4}" -f "Number", "FriendlyName", "OperationalStatus", "Size (GB)", "BusType")
+Write-Host ("{0,-8} {1,-30} {2,-18} {3,-12} {4}" -f "------", "------------", "-----------------", "---------", "-------")
+
+foreach ($disk in Get-Disk) {
+    $size    = [math]::Round($disk.Size / 1GB, 2)
+    $busType = $disk.BusType
+
+    $color = if ($busType -eq "USB" -or $busType -eq "1394" -or $busType -eq "MMC") {
+        "Green"
+    } else {
+        "Red"
+    }
+
+    Write-Host ("{0,-8} {1,-30} {2,-18} {3,-12} {4}" -f $disk.Number, $disk.FriendlyName, $disk.OperationalStatus, $size, $busType) -ForegroundColor $color
+}
+
+Write-Host ""
+Write-Host "  Green = External / USB drive - likely your target" -ForegroundColor Green
+Write-Host "  Red   = Internal drive - leave alone" -ForegroundColor Red
+Write-Host ""
 
 $diskNum = Read-Host "Enter the disk number you wish to fix"
 
