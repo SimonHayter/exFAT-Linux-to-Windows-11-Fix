@@ -16,7 +16,7 @@ if ($diskNum -notmatch '^\d+$' -or -not (Get-Disk -Number $diskNum -ErrorAction 
 Write-Host "`nPartitions on Disk ${diskNum}:" -ForegroundColor Cyan
 Get-Partition -DiskNumber $diskNum | Select-Object PartitionNumber, Type,
     @{Name="Size (GB)"; Expression={[math]::Round($_.Size / 1GB, 2)}},
-    @{Name="FileSystem"; Expression={(Get-Volume -Partition $_ -ErrorAction SilentlyContinue)?.FileSystemType}},
+    @{Name="FileSystem"; Expression={$v = Get-Volume -Partition $_ -ErrorAction SilentlyContinue; if ($v) { $v.FileSystemType } else { "Unknown" }}},
     DriveLetter | Format-Table -AutoSize
 
 $partNum = Read-Host "Enter the partition number you wish to fix"
