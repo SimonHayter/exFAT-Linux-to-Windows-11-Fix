@@ -13,7 +13,7 @@ if ($diskNum -notmatch '^\d+$' -or -not (Get-Disk -Number $diskNum -ErrorAction 
     exit 1
 }
 
-Write-Host "`nPartitions on Disk $diskNum:" -ForegroundColor Cyan
+Write-Host "`nPartitions on Disk ${diskNum}:" -ForegroundColor Cyan
 Write-Host ("{0,-6} {1,-20} {2,-10} {3,-12} {4}" -f "No.", "Type", "Size (GB)", "FileSystem", "DriveLetter")
 Write-Host ("{0,-6} {1,-20} {2,-10} {3,-12} {4}" -f "---", "----", "---------", "----------", "-----------")
 
@@ -40,9 +40,9 @@ foreach ($part in Get-Partition -DiskNumber $diskNum) {
 }
 
 Write-Host ""
-Write-Host "  Green  = exFAT, no drive letter — likely needs fixing" -ForegroundColor Green
-Write-Host "  Yellow = exFAT, drive letter assigned — Windows can already see it" -ForegroundColor Yellow
-Write-Host "  Red    = Not exFAT — leave alone" -ForegroundColor Red
+Write-Host "  Green  = exFAT, no drive letter - likely needs fixing" -ForegroundColor Green
+Write-Host "  Yellow = exFAT, drive letter assigned - Windows can already see it" -ForegroundColor Yellow
+Write-Host "  Red    = Not exFAT - leave alone" -ForegroundColor Red
 Write-Host ""
 
 $partNum = Read-Host "Enter the partition number you wish to fix"
@@ -69,4 +69,4 @@ exit
 
 $commands | diskpart
 
-Write-Host "`nDone. Safely eject and reconnect the drive — Windows should now recognise it." -ForegroundColor Green
+Write-Host "`nDone. Safely eject and reconnect the drive - Windows should now recognise it." -ForegroundColor Green
