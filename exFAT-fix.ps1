@@ -11,18 +11,25 @@ foreach ($disk in Get-Disk) {
     $size    = [math]::Round($disk.Size / 1GB, 2)
     $busType = $disk.BusType
 
-    $color = if ($busType -eq "USB" -or $busType -eq "1394" -or $busType -eq "MMC") {
-        "Green"
-    } else {
-        "Red"
+    $hasCandidate = $false
+    foreach ($part in (Get-Partition -DiskNumber $disk.Number -ErrorAction SilentlyContinue)) {
+        $volume = Get-Volume -Partition $part -ErrorAction SilentlyContinue
+        $fs     = if ($volume) { $volume.FileSystemType } else { "Unknown" }
+        $hasLetter = $part.DriveLetter -as [bool]
+        if (($fs -eq "exFAT" -and -not $hasLetter) -or ($fs -eq "Unknown" -and -not $hasLetter)) {
+            $hasCandidate = $true
+            break
+        }
     }
+
+    $color = if ($hasCandidate) { "Green" } else { "Red" }
 
     Write-Host ("{0,-8} {1,-30} {2,-18} {3,-12} {4}" -f $disk.Number, $disk.FriendlyName, $disk.OperationalStatus, $size, $busType) -ForegroundColor $color
 }
 
 Write-Host ""
-Write-Host "  Green = External / USB drive - likely your target" -ForegroundColor Green
-Write-Host "  Red   = Internal drive - leave alone" -ForegroundColor Red
+Write-Host "  Green = Contains a partition that likely needs fixing" -ForegroundColor Green
+Write-Host "  Red   = No candidate partitions found - likely leave alone" -ForegroundColor Red
 Write-Host ""
 
 $diskNum = Read-Host "Enter the disk number you wish to fix"
