@@ -27,11 +27,17 @@ The script is compatible with:
 
 ## Usage
 
+### Downloading the Script
+
+Download `exFAT-fix.ps1` from this repository and save it anywhere convenient — your Desktop or Downloads folder is perfectly fine. This is a one-off fix script and doesn't need to be installed anywhere specific.
+
+### Running the Script
+
 > **Warning:** Always confirm your disk and partition numbers before running. Use **Disk Management** or run `list disk` inside diskpart to verify.
 
-1. Run PowerShell as **Administrator**
-2. Confirm your target disk and partition numbers
-3. Execute the script
+1. Download `exFAT-fix.ps1` to a convenient location
+2. Right-click PowerShell and select **Run as Administrator**
+3. Navigate to where you saved the script and execute it
 
 ### Reading the Partition Colours
 
