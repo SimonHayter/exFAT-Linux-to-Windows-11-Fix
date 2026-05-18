@@ -43,7 +43,15 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 > This allows locally saved scripts to run freely. You will only need to do this once.
 
-**Step 2** — Right-click PowerShell and select **Run as Administrator**, navigate to where you saved the script, then run it using the `.\` prefix:
+**Step 2** — Because the script was downloaded from the internet, Windows will block it from running even with the execution policy set. Unblock it by running:
+
+```powershell
+Unblock-File .\exFAT-fix.ps1
+```
+
+> When you download a file from the internet, Windows silently attaches an invisible flag to it called a Zone Identifier — essentially a mark that says "this came from the internet, treat it with caution." `Unblock-File` removes that flag, telling Windows you trust the script. You will only need to do this once per download.
+
+**Step 3** — Right-click PowerShell and select **Run as Administrator**, navigate to where you saved the script, then run it using the `.\` prefix:
 
 ```powershell
 .\exFAT-fix.ps1
