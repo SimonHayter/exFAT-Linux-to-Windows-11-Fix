@@ -45,6 +45,16 @@ When the script lists partitions on your selected disk, each row is colour-coded
 
 > **Note:** If Windows cannot read the partition at all due to the ID mismatch, it may show the filesystem as `Unknown` with no drive letter. These are also highlighted green as they are likely the broken exFAT partition.
 
+### Quick Command Alternative
+
+If you already know your disk and partition numbers — for example, you only have one fixed internal drive and any new drive will always land on the same disk number — you can skip the script entirely and paste the following directly into PowerShell:
+
+```powershell
+"select disk 1","select partition 1","set id=07 override","exit" | diskpart
+```
+
+> **Before running, update `disk 1` and `partition 1` to match your setup.** This is best suited for predictable, consistent configurations where the target disk number doesn't change between uses.
+
 ---
 
 ## License
