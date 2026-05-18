@@ -1,0 +1,48 @@
+# exFAT Linux to Windows 11 Fix
+
+## The Problem
+
+You've stress-tested your drive with **F3write** and **F3read** using Parted Magic or another Linux-based tool, formatted it as exFAT, and plugged it back into Windows — only for it to show up as blank, unformatted, or completely invisible. The drive is fine. The filesystem is intact. Windows just refuses to recognise it.
+
+The culprit is a partition type ID mismatch. Linux disk utilities assign a partition identifier that Windows doesn't associate with a valid exFAT volume. The fix doesn't require reformatting or any data loss — just a single metadata correction.
+
+---
+
+## The Fix
+
+This PowerShell script uses `diskpart` to reset the partition type ID to `0x07`, the value Windows expects for exFAT and NTFS volumes. Once corrected, Windows immediately recognises the drive and mounts it normally.
+
+### Windows Compatibility
+
+The script is compatible with:
+
+- Windows 7
+- Windows 8 / 8.1
+- Windows 10
+- Windows 11
+
+> **Not supported on Windows XP or Vista.**
+
+---
+
+## Usage
+
+> **Warning:** Always confirm your disk and partition numbers before running. Use **Disk Management** or run `list disk` inside diskpart to verify.
+
+1. Run PowerShell as **Administrator**
+2. Confirm your target disk and partition numbers
+3. Execute the script
+
+---
+
+## License
+
+MIT
+
+---
+
+## Disclaimer
+
+This script is intended for use on freshly formatted mechanical drives, solid state drives, and flash drives that have not yet been populated with data. If you intend to run this script on a drive that contains valuable content, you should first clone the drive using one of the many tools available online before proceeding.
+
+This script modifies low-level disk partition data. While it is designed only to correct a partition type ID and should not affect your data, incorrect use — such as targeting the wrong disk or partition — can result in permanent, unrecoverable data loss. Always back up any important data before proceeding. Use this script entirely at your own risk. The author accepts no responsibility for any data loss, corruption, or damage resulting from its use.
