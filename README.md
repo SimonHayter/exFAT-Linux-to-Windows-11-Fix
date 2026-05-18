@@ -35,9 +35,19 @@ Download `exFAT-fix.ps1` from this repository and save it anywhere convenient �
 
 > **Warning:** Always confirm your disk and partition numbers before running. Use **Disk Management** or run `list disk` inside diskpart to verify.
 
-1. Download `exFAT-fix.ps1` to a convenient location
-2. Right-click PowerShell and select **Run as Administrator**
-3. Navigate to where you saved the script and execute it
+**Step 1** — If you have never run a PowerShell script before, you may need to enable them first. Run this once in PowerShell:
+
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+> This allows locally saved scripts to run freely. You will only need to do this once.
+
+**Step 2** — Right-click PowerShell and select **Run as Administrator**, navigate to where you saved the script, then run it using the `.\` prefix:
+
+```powershell
+.\exFAT-fix.ps1
+```
 
 ### Reading the Partition Colours
 
